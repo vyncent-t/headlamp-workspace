@@ -32,8 +32,6 @@ export class HeadlampPage {
   }
 
   async authenticate(token?: string) {
-    await this.page.waitForSelector('h1:has-text("Authentication")');
-
     // Check to see if already authenticated
     if (await this.page.isVisible('button:has-text("Authenticate")')) {
       this.hasToken(token || '');
@@ -50,7 +48,11 @@ export class HeadlampPage {
   }
 
   async navigateToCluster(name: string, token?: string) {
-    await this.navigateTopage(`/c/${name}`);
+    // Since we are using multi cluster structure we need to have a full reset navigation
+    await this.page.goto(`${this.testURL}`);
+    await this.page.waitForLoadState('load');
+    await this.page.getByRole('link', { name: name, exact: true }).click();
+    await this.page.waitForLoadState('load');
     await this.authenticate(token);
   }
 
