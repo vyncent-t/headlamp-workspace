@@ -1749,6 +1749,14 @@ func (c *HeadlampConfig) renameCluster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !checkClusterNameValid(reqBody.NewClusterName) {
+		http.Error(w, "invalid cluster name", http.StatusBadRequest)
+		logger.Log(logger.LevelError, map[string]string{"cluster": clusterName},
+			errors.New("invalid cluster name"), "invalid cluster name")
+
+		return
+	}
+
 	// Get path of kubeconfig from source
 	path, config, err := c.getPathAndLoadKubeconfig(reqBody.Source, clusterName)
 	if err != nil {
@@ -1803,6 +1811,17 @@ func findMatchingContextName(config *api.Config, clusterName string) string {
 	}
 
 	return contextName
+}
+
+// checkClusterNameValid checks if the cluster name is valid format of DNS-1123.
+func checkClusterNameValid(name string) bool {
+	if len(name) == 0 || len(name) > 63 {
+		return false
+	}
+
+	validName := regexp.MustCompile(`^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`)
+
+	return validName.MatchString(name)
 }
 
 // checkUniqueName returns false if 'newName' is already in 'names' otherwise returns true.
