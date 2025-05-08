@@ -28,6 +28,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -762,6 +763,32 @@ func TestRenameCluster(t *testing.T) {
 
 	clusters := c.getClusters()
 	assert.Equal(t, 2, len(clusters))
+}
+
+func FuzzCheckClusterNameValid(f *testing.F) {
+	validName := regexp.MustCompile(`^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`)
+
+	for _, s := range []string{
+		"",
+		"a",
+		"0",
+		"valid-name",
+		"validname",
+		"-invalid-name",
+		"0invalid-name",
+		"INVALIDNAME",
+	} {
+		f.Add(s)
+	}
+
+	f.Fuzz(func(t *testing.T, s string) {
+		want := validName.MatchString(s) && len(s) <= 63
+		got := checkClusterNameValid(s)
+
+		if got != want {
+			t.Errorf("checkClusterNameValid(%q) = %v, want %v", s, got, want)
+		}
+	})
 }
 
 func TestFileExists(t *testing.T) {
