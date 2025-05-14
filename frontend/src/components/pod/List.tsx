@@ -15,7 +15,7 @@
  */
 
 import { Icon } from '@iconify/react';
-import { Box } from '@mui/material';
+import { Box, Button, Card, CardActions, CardContent, Typography } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApiError } from '../../lib/k8s/apiProxy';
@@ -191,185 +191,397 @@ export function PodListRenderer(props: PodListProps) {
     );
   };
 
+  pods?.forEach(pod => {
+    console.log('Pod', pod);
+  });
+
+  function renderPodCard(pod: Pod) {
+    console.log('Pod Card', pod);
+
+    function handleCardClick() {
+      const podLink = document.getElementById(`pod-link-${pod.getName()}`);
+      if (podLink) {
+        podLink.click();
+      }
+    }
+
+    return (
+      <Card
+        key={pod.getName()}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+          padding: 0.2,
+          borderRadius: 2,
+          boxShadow: 1,
+          width: '30%',
+          cursor: 'pointer',
+          '&:hover': {
+            boxShadow: 3,
+            border: '1px solid',
+            borderColor: theme => theme.palette.primary.main,
+          },
+        }}
+        onClick={handleCardClick}
+      >
+        <CardContent>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+            }}
+          >
+            {/* Top card part */}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Box
+                sx={{
+                  alignSelf: 'flex-end',
+                }}
+              >
+                {/* ... Button to do: add later */}
+                <CardActions>
+                  <Button
+                    size="small"
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      height: '0.5rem',
+                      width: '0.5rem',
+                      padding: 0,
+                    }}
+                  >
+                    <Icon width="2rem" height="2rem" icon="mdi:dots-horizontal" />
+                  </Button>
+                </CardActions>
+              </Box>
+
+              {/* Name */}
+              <Link
+                id={`pod-link-${pod.getName()}`}
+                routeName="pod"
+                params={{ name: pod.getName(), namespace: pod.getNamespace() }}
+                activeCluster={pod.cluster}
+                tooltip
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}
+              >
+                <Typography variant="h6">{pod.getName()}</Typography>
+              </Link>
+            </Box>
+
+            {/* card body - middle */}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+              }}
+            >
+              {/* left side for namespace and node */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1,
+                }}
+              >
+                <Typography>
+                  <strong>{t('translation|Namespace')}:</strong>{' '}
+                  <Link routeName={'namespaces'} params={{ name: pod.getNamespace() }} tooltip>
+                    {pod.getNamespace()}
+                  </Link>
+                </Typography>
+                <Typography>
+                  <strong>{t('translation|Node')}:</strong>{' '}
+                  <Link routeName="node" params={{ name: pod.spec.nodeName }} tooltip>
+                    {pod.spec.nodeName}
+                  </Link>
+                </Typography>
+
+                {/* left side for ip and status */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'wrap',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      gap: 1,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        marginTop: 0.5,
+                      }}
+                    >
+                      <Typography>
+                        <strong>{t('translation|Status')}:</strong>
+                      </Typography>
+                    </Box>
+                    <Box>{makePodStatusLabel(pod, false)}</Box>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      marginTop: 0.5,
+                    }}
+                  >
+                    <Typography>
+                      <strong>{t('translation|IP')}:</strong> {pod.status.podIP}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* card body - right siide */}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'wrap',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
+              <Typography>
+                <strong>{t('translation|Restarts')}:</strong> {pod.getDetailedStatus().restarts}
+              </Typography>
+              <Typography>
+                <strong>{t('translation|Ready')}:</strong> {pod.getDetailedStatus().readyContainers}
+                /{pod.getDetailedStatus().totalContainers}
+              </Typography>
+              <Typography>
+                <strong>{t('translation|Age')}:</strong> {pod.getAge()}
+              </Typography>
+            </Box>
+
+            <Box></Box>
+          </Box>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <ResourceListView
-      title={t('Pods')}
-      headerProps={{
-        noNamespaceFilter,
+    // looks a little funky for now but thats just for the concept look
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
       }}
-      hideColumns={hideColumns}
-      errors={errors}
-      columns={[
-        'name',
-        'namespace',
-        'cluster',
-        {
-          label: t('Restarts'),
-          gridTemplate: 'min-content',
-          getValue: pod => {
-            const { restarts, lastRestartDate } = pod.getDetailedStatus();
-            return lastRestartDate.getTime() !== 0
-              ? t('{{ restarts }} ({{ abbrevTime }} ago)', {
-                  restarts: restarts,
-                  abbrevTime: timeAgo(lastRestartDate, { format: 'mini' }),
-                })
-              : restarts;
-          },
-        },
-        {
-          id: 'ready',
-          gridTemplate: 'min-content',
-          label: t('translation|Ready'),
-          getValue: pod => {
-            const podRow = pod.getDetailedStatus();
-            return `${podRow.readyContainers}/${podRow.totalContainers}`;
-          },
-        },
-        {
-          id: 'status',
-          gridTemplate: 'min-content',
-          label: t('translation|Status'),
-          getValue: pod => getPodStatus(pod) + '' + pod.getDetailedStatus().reason,
-          render: makePodStatusLabel,
-        },
-        ...(metrics?.length
-          ? [
-              {
-                id: 'cpu',
-                label: t('CPU'),
-                gridTemplate: 'min-content',
-                render: (pod: Pod) => {
-                  const cpu = getCpuUsage(pod);
-                  if (cpu === undefined) return;
-
-                  const { value, unit } = unparseCpu(String(cpu));
-
-                  return `${value} ${unit}`;
-                },
-                getValue: (pod: Pod) => getCpuUsage(pod) ?? 0,
+    >
+      <Box>
+        <ResourceListView
+          title={t('Pods')}
+          headerProps={{
+            noNamespaceFilter,
+          }}
+          hideColumns={hideColumns}
+          errors={errors}
+          columns={[
+            'name',
+            'namespace',
+            'cluster',
+            {
+              label: t('Restarts'),
+              gridTemplate: 'min-content',
+              getValue: pod => {
+                const { restarts, lastRestartDate } = pod.getDetailedStatus();
+                return lastRestartDate.getTime() !== 0
+                  ? t('{{ restarts }} ({{ abbrevTime }} ago)', {
+                      restarts: restarts,
+                      abbrevTime: timeAgo(lastRestartDate, { format: 'mini' }),
+                    })
+                  : restarts;
               },
-              {
-                id: 'memory',
-                label: t('Memory'),
-                gridTemplate: 'min-content',
-                render: (pod: Pod) => {
-                  const memory = getMemoryUsage(pod);
-                  if (memory === undefined) return;
-                  const { value, unit } = unparseRam(memory);
-
-                  return `${value} ${unit}`;
-                },
-                getValue: (pod: Pod) => getMemoryUsage(pod) ?? 0,
+            },
+            {
+              id: 'ready',
+              gridTemplate: 'min-content',
+              label: t('translation|Ready'),
+              getValue: pod => {
+                const podRow = pod.getDetailedStatus();
+                return `${podRow.readyContainers}/${podRow.totalContainers}`;
               },
-            ]
-          : []),
-        {
-          id: 'ip',
-          gridTemplate: 'min-content',
-          label: t('glossary|IP'),
-          getValue: pod => pod.status?.podIP ?? '',
-        },
-        {
-          id: 'node',
-          label: t('glossary|Node'),
-          gridTemplate: 'auto',
-          getValue: pod => pod?.spec?.nodeName,
-          render: pod =>
-            pod?.spec?.nodeName && (
-              <Link
-                routeName="node"
-                params={{ name: pod.spec.nodeName }}
-                activeCluster={pod.cluster}
-                tooltip
-              >
-                {pod.spec.nodeName}
-              </Link>
-            ),
-        },
-        {
-          id: 'nominatedNode',
-          label: t('glossary|Nominated Node'),
-          getValue: pod => pod?.status?.nominatedNodeName,
-          render: pod =>
-            !!pod?.status?.nominatedNodeName && (
-              <Link
-                routeName="node"
-                params={{ name: pod?.status?.nominatedNodeName }}
-                activeCluster={pod.cluster}
-                tooltip
-              >
-                {pod?.status?.nominatedNodeName}
-              </Link>
-            ),
-          show: false,
-        },
-        {
-          id: 'readinessGates',
-          label: t('glossary|Readiness Gates'),
-          getValue: pod => {
-            const readinessGatesStatus = getReadinessGatesStatus(pod);
-            const total = Object.keys(readinessGatesStatus).length;
+            },
+            {
+              id: 'status',
+              gridTemplate: 'min-content',
+              label: t('translation|Status'),
+              getValue: pod => getPodStatus(pod) + '' + pod.getDetailedStatus().reason,
+              render: makePodStatusLabel,
+            },
+            ...(metrics?.length
+              ? [
+                  {
+                    id: 'cpu',
+                    label: t('CPU'),
+                    gridTemplate: 'min-content',
+                    render: (pod: Pod) => {
+                      const cpu = getCpuUsage(pod);
+                      if (cpu === undefined) return;
 
-            if (total === 0) {
-              return '';
-            }
+                      const { value, unit } = unparseCpu(String(cpu));
 
-            const statusTrueCount = Object.values(readinessGatesStatus).filter(
-              status => status === 'True'
-            ).length;
+                      return `${value} ${unit}`;
+                    },
+                    getValue: (pod: Pod) => getCpuUsage(pod) ?? 0,
+                  },
+                  {
+                    id: 'memory',
+                    label: t('Memory'),
+                    gridTemplate: 'min-content',
+                    render: (pod: Pod) => {
+                      const memory = getMemoryUsage(pod);
+                      if (memory === undefined) return;
+                      const { value, unit } = unparseRam(memory);
 
-            return statusTrueCount;
-          },
-          render: pod => {
-            const readinessGatesStatus = getReadinessGatesStatus(pod);
-            const total = Object.keys(readinessGatesStatus).length;
+                      return `${value} ${unit}`;
+                    },
+                    getValue: (pod: Pod) => getMemoryUsage(pod) ?? 0,
+                  },
+                ]
+              : []),
+            {
+              id: 'ip',
+              gridTemplate: 'min-content',
+              label: t('glossary|IP'),
+              getValue: pod => pod.status?.podIP ?? '',
+            },
+            {
+              id: 'node',
+              label: t('glossary|Node'),
+              gridTemplate: 'auto',
+              getValue: pod => pod?.spec?.nodeName,
+              render: pod =>
+                pod?.spec?.nodeName && (
+                  <Link
+                    routeName="node"
+                    params={{ name: pod.spec.nodeName }}
+                    activeCluster={pod.cluster}
+                    tooltip
+                  >
+                    {pod.spec.nodeName}
+                  </Link>
+                ),
+            },
+            {
+              id: 'nominatedNode',
+              label: t('glossary|Nominated Node'),
+              getValue: pod => pod?.status?.nominatedNodeName,
+              render: pod =>
+                !!pod?.status?.nominatedNodeName && (
+                  <Link
+                    routeName="node"
+                    params={{ name: pod?.status?.nominatedNodeName }}
+                    activeCluster={pod.cluster}
+                    tooltip
+                  >
+                    {pod?.status?.nominatedNodeName}
+                  </Link>
+                ),
+              show: false,
+            },
+            {
+              id: 'readinessGates',
+              label: t('glossary|Readiness Gates'),
+              getValue: pod => {
+                const readinessGatesStatus = getReadinessGatesStatus(pod);
+                const total = Object.keys(readinessGatesStatus).length;
 
-            if (total === 0) {
-              return null;
-            }
+                if (total === 0) {
+                  return '';
+                }
 
-            const statusTrueCount = Object.values(readinessGatesStatus).filter(
-              status => status === 'True'
-            ).length;
+                const statusTrueCount = Object.values(readinessGatesStatus).filter(
+                  status => status === 'True'
+                ).length;
 
-            return (
-              <LightTooltip
-                title={Object.keys(readinessGatesStatus)
-                  .map(conditionType => `${conditionType}: ${readinessGatesStatus[conditionType]}`)
-                  .join('\n')}
-                interactive
-              >
-                <span>{`${statusTrueCount}/${total}`}</span>
-              </LightTooltip>
-            );
-          },
-          sort: (p1: Pod, p2: Pod) => {
-            const readinessGatesStatus1 = getReadinessGatesStatus(p1);
-            const readinessGatesStatus2 = getReadinessGatesStatus(p2);
-            const total1 = Object.keys(readinessGatesStatus1).length;
-            const total2 = Object.keys(readinessGatesStatus2).length;
+                return statusTrueCount;
+              },
+              render: pod => {
+                const readinessGatesStatus = getReadinessGatesStatus(pod);
+                const total = Object.keys(readinessGatesStatus).length;
 
-            if (total1 !== total2) {
-              return total1 - total2;
-            }
+                if (total === 0) {
+                  return null;
+                }
 
-            const statusTrueCount1 = Object.values(readinessGatesStatus1).filter(
-              status => status === 'True'
-            ).length;
-            const statusTrueCount2 = Object.values(readinessGatesStatus2).filter(
-              status => status === 'True'
-            ).length;
+                const statusTrueCount = Object.values(readinessGatesStatus).filter(
+                  status => status === 'True'
+                ).length;
 
-            return statusTrueCount1 - statusTrueCount2;
-          },
-          show: false,
-        },
-        'age',
-      ]}
-      data={pods}
-      reflectInURL={reflectTableInURL}
-      id="headlamp-pods"
-    />
+                return (
+                  <LightTooltip
+                    title={Object.keys(readinessGatesStatus)
+                      .map(
+                        conditionType => `${conditionType}: ${readinessGatesStatus[conditionType]}`
+                      )
+                      .join('\n')}
+                    interactive
+                  >
+                    <span>{`${statusTrueCount}/${total}`}</span>
+                  </LightTooltip>
+                );
+              },
+              sort: (p1: Pod, p2: Pod) => {
+                const readinessGatesStatus1 = getReadinessGatesStatus(p1);
+                const readinessGatesStatus2 = getReadinessGatesStatus(p2);
+                const total1 = Object.keys(readinessGatesStatus1).length;
+                const total2 = Object.keys(readinessGatesStatus2).length;
+
+                if (total1 !== total2) {
+                  return total1 - total2;
+                }
+
+                const statusTrueCount1 = Object.values(readinessGatesStatus1).filter(
+                  status => status === 'True'
+                ).length;
+                const statusTrueCount2 = Object.values(readinessGatesStatus2).filter(
+                  status => status === 'True'
+                ).length;
+
+                return statusTrueCount1 - statusTrueCount2;
+              },
+              show: false,
+            },
+            'age',
+          ]}
+          data={pods}
+          reflectInURL={reflectTableInURL}
+          id="headlamp-pods"
+        />
+
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'wrap',
+            flexWrap: 'wrap',
+            gap: 2,
+          }}
+        >
+          {pods?.map(pod => renderPodCard(pod))}
+        </Box>
+      </Box>
+    </Box>
   );
 }
 
