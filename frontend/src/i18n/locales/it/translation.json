@@ -448,6 +448,7 @@
   "Redirecting to main page…": "Reindirizzamento alla pagina principale…",
   "Lines": "Linee",
   "Previous": "",
+  "Prettify logs by formatting JSON values and colorizing them.": "",
   "Prettify": "",
   "Show JSON values in plain text by removing escape characters.": "",
   "Format": "",

@@ -447,6 +447,7 @@
   "Redirecting to main page…": "मुख्य पृष्ठ पर पुनः निर्देशित किया जा रहा है…",
   "Lines": "",
   "Previous": "",
+  "Prettify logs by formatting JSON values and colorizing them.": "",
   "Prettify": "",
   "Show JSON values in plain text by removing escape characters.": "एस्केप कैरेक्टर्स हटाकर JSON मानों को सादा पाठ में दिखाएँ।",
   "Format": "",

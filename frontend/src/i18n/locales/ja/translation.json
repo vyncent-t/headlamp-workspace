@@ -446,6 +446,7 @@
   "Redirecting to main page…": "メインページへリダイレクト中…",
   "Lines": "行",
   "Previous": "",
+  "Prettify logs by formatting JSON values and colorizing them.": "",
   "Prettify": "",
   "Show JSON values in plain text by removing escape characters.": "",
   "Format": "",
