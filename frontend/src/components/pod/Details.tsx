@@ -23,7 +23,7 @@ import Switch from '@mui/material/Switch';
 import { Box, styled } from '@mui/system';
 import { Terminal as XTerminal } from '@xterm/xterm';
 import _ from 'lodash';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { KubeContainerStatus } from '../../lib/k8s/cluster';
@@ -210,6 +210,21 @@ export function PodLogViewer(props: PodLogViewerProps) {
     setFormatJsonValues(format => !format);
   }
 
+  function handleWrapText() {
+    setIsTextWrappedEnabled(!isTextWrappedEnabled);
+  }
+
+  useEffect(() => {
+    if (prettifyLogs || formatJsonValues) {
+      setIsTextWrappedEnabled(true);
+    }
+
+    // if (isTextWrappedEnabled) {
+    //   setPrettifyLogs(false);
+    //   setFormatJsonValues(false);
+    // }
+  }, [prettifyLogs, formatJsonValues]);
+
   /**
    * Handle the reconnect button being clicked.
    * This will start a new log stream and hide the reconnect button.
@@ -242,10 +257,6 @@ export function PodLogViewer(props: PodLogViewerProps) {
 
     // Hide the reconnect button
     setShowReconnectButton(false);
-  }
-
-  function handleWrapText() {
-    setIsTextWrappedEnabled(!isTextWrappedEnabled);
   }
 
   return (
@@ -416,7 +427,14 @@ export function PodLogViewer(props: PodLogViewerProps) {
             <LightTooltip title={t('translation|Wrap text in the terminal.')}>
               <PaddedFormControlLabel
                 control={
-                  <Switch checked={isTextWrappedEnabled} onChange={handleWrapText} size="small" />
+                  <Switch
+                    checked={isTextWrappedEnabled}
+                    onChange={handleWrapText}
+                    size="small"
+                    name="wrapText"
+                    color="primary"
+                    sx={{ transform: 'scale(0.8)' }}
+                  />
                 }
                 label={t('translation|Wrap lines')}
                 disabled={false}
@@ -424,19 +442,25 @@ export function PodLogViewer(props: PodLogViewerProps) {
             </LightTooltip>
 
             {hasJsonLogs && (
-              <PaddedFormControlLabel
-                label={t('translation|Prettify')}
-                control={
-                  <Switch
-                    checked={prettifyLogs}
-                    onChange={handlePrettifyChange}
-                    name="prettifyLogs"
-                    color="primary"
-                    size="small"
-                    sx={{ transform: 'scale(0.8)' }}
-                  />
-                }
-              />
+              <LightTooltip
+                title={t(
+                  'translation|Prettify logs by formatting JSON values and colorizing them.'
+                )}
+              >
+                <PaddedFormControlLabel
+                  label={t('translation|Prettify')}
+                  control={
+                    <Switch
+                      checked={prettifyLogs}
+                      onChange={handlePrettifyChange}
+                      name="prettifyLogs"
+                      color="primary"
+                      size="small"
+                      sx={{ transform: 'scale(0.8)' }}
+                    />
+                  }
+                />
+              </LightTooltip>
             )}
             {hasJsonLogs && (
               <LightTooltip
