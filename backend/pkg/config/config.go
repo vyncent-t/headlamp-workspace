@@ -233,6 +233,43 @@ func DefaultKubeConfigPersistenceFile() (string, error) {
 	return filepath.Join(kubeConfigDir, "config"), nil
 }
 
+// collectMultiConfigPaths looks at the default dynamic directory
+// (e.g. ~/.config/Headlamp/kubeconfigs) and returns any files found there.
+// This is called from the 'else' block in deleteCluster().
+//
+//nolint:prealloc
+func CollectMultiConfigPaths() ([]string, error) {
+	dynamicDir, err := DefaultKubeConfigPersistenceDir()
+	if err != nil {
+		return nil, fmt.Errorf("getting default kubeconfig persistence dir: %w", err)
+	}
+
+	entries, err := os.ReadDir(dynamicDir)
+	if err != nil {
+		return nil, fmt.Errorf("reading dynamic kubeconfig directory: %w", err)
+	}
+
+	var configPaths []string
+
+	for _, entry := range entries {
+		// Optionally skip directories or non-kubeconfig files, if needed.
+		if entry.IsDir() {
+			continue
+		}
+
+		// Validate known kubeconfig file extensions
+		if !strings.HasSuffix(entry.Name(), ".yaml") && !strings.HasSuffix(entry.Name(), ".yml") {
+			continue
+		}
+
+		filePath := filepath.Join(dynamicDir, entry.Name())
+
+		configPaths = append(configPaths, filePath)
+	}
+
+	return configPaths, nil
+}
+
 func flagset() *flag.FlagSet {
 	f := flag.NewFlagSet("config", flag.ContinueOnError)
 
