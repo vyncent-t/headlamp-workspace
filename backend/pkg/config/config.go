@@ -224,6 +224,14 @@ func DefaultKubeConfigPersistenceDir() (string, error) {
 	return "", fmt.Errorf("failed to get default kubeconfig persistence directory: %v", err)
 }
 
+func DefaultKubeConfigPersistenceFile() (string, error) {
+	kubeConfigDir, err := DefaultKubeConfigPersistenceDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(kubeConfigDir, "config"), nil
+}
 
 func flagset() *flag.FlagSet {
 	f := flag.NewFlagSet("config", flag.ContinueOnError)
