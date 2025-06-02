@@ -331,6 +331,41 @@ func RemoveContextFromConfigs(contextName string, configPaths []string) error {
 	return nil
 }
 
+func RemoveContextFromDefaultKubeConfig(
+	contextName string,
+	configPaths ...string,
+) error {
+	// Check if contextName is empty
+	if contextName == "" {
+		return fmt.Errorf("context name cannot be empty")
+	}
+
+	// If no specific paths passed, fallback to the default.
+	if len(configPaths) == 0 {
+		discoveredPath, err := DefaultKubeConfigPersistenceFile()
+		if err != nil {
+			logger.Log(
+				logger.LevelError,
+				map[string]string{"cluster": contextName},
+				err,
+				"getting default kubeconfig persistence file",
+			)
+
+			return fmt.Errorf("getting default kubeconfig persistence file: %w", err)
+		}
+
+		configPaths = []string{discoveredPath}
+	}
+
+	// Check if configPaths is empty
+	if len(configPaths) == 0 {
+		return fmt.Errorf("no config paths provided")
+	}
+
+	// Hand off to a small helper function that handles multi-file iteration.
+	return RemoveContextFromConfigs(contextName, configPaths)
+}
+
 func flagset() *flag.FlagSet {
 	f := flag.NewFlagSet("config", flag.ContinueOnError)
 
