@@ -14,6 +14,7 @@ import (
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/providers/basicflag"
 	"github.com/knadh/koanf/providers/env"
+	"github.com/kubernetes-sigs/headlamp/backend/pkg/kubeconfig"
 	"github.com/kubernetes-sigs/headlamp/backend/pkg/logger"
 )
 
@@ -268,6 +269,66 @@ func CollectMultiConfigPaths() ([]string, error) {
 	}
 
 	return configPaths, nil
+}
+
+// RemoveContextFromConfigs does the real iteration over the configPaths.
+func RemoveContextFromConfigs(contextName string, configPaths []string) error {
+	var removed bool
+
+	for _, filePath := range configPaths {
+		logger.Log(
+			logger.LevelInfo,
+			map[string]string{
+				"cluster":                   contextName,
+				"kubeConfigPersistenceFile": filePath,
+			},
+			nil,
+			"Trying to remove context from kubeconfig",
+		)
+
+		err := kubeconfig.RemoveContextFromFile(contextName, filePath)
+		if err == nil {
+			removed = true
+
+			logger.Log(logger.LevelInfo,
+				map[string]string{"cluster": contextName, "file": filePath},
+				nil, "Removed context from kubeconfig",
+			)
+
+			break
+		}
+
+		if strings.Contains(err.Error(), "context not found") {
+			logger.Log(logger.LevelInfo,
+				map[string]string{"cluster": contextName, "file": filePath},
+				nil, "Context not in this file; checking next.",
+			)
+
+			continue
+		}
+
+		logger.Log(logger.LevelError,
+			map[string]string{"cluster": contextName},
+			err, "removing cluster from kubeconfig",
+		)
+
+		return err
+	}
+
+	if !removed {
+		e := fmt.Errorf("context %q not found in any provided kubeconfig file(s)", contextName)
+
+		logger.Log(
+			logger.LevelError,
+			map[string]string{"cluster": contextName},
+			e,
+			"context not found in any file",
+		)
+
+		return e
+	}
+
+	return nil
 }
 
 func flagset() *flag.FlagSet {
