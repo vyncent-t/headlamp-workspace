@@ -193,6 +193,38 @@ func Parse(args []string) (*Config, error) {
 	return &config, nil
 }
 
+// DefaultKubeConfigPersistenceDir returns the default directory to store kubeconfig
+// files of clusters that are loaded in Headlamp.
+func DefaultKubeConfigPersistenceDir() (string, error) {
+	userConfigDir, err := os.UserConfigDir()
+
+	if err == nil {
+		kubeConfigDir := filepath.Join(userConfigDir, "Headlamp", "kubeconfigs")
+		if runtime.GOOS == "windows" {
+			// golang is wrong for config folder on windows.
+			// This matches env-paths and headlamp-plugin.
+			kubeConfigDir = filepath.Join(userConfigDir, "Headlamp", "Config", "kubeconfigs")
+		}
+
+		// Create the directory if it doesn't exist.
+		fileMode := 0o755
+
+		err = os.MkdirAll(kubeConfigDir, fs.FileMode(fileMode))
+		if err == nil {
+			return kubeConfigDir, nil
+		}
+	}
+
+	// if any error occurred, fallback to the current directory.
+	ex, err := os.Executable()
+	if err == nil {
+		return filepath.Dir(ex), nil
+	}
+
+	return "", fmt.Errorf("failed to get default kubeconfig persistence directory: %v", err)
+}
+
+
 func flagset() *flag.FlagSet {
 	f := flag.NewFlagSet("config", flag.ContinueOnError)
 
