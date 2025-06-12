@@ -274,43 +274,8 @@ func serveWithNoCacheHeader(fs http.Handler) http.HandlerFunc {
 	}
 }
 
-// defaultKubeConfigPersistenceDir returns the default directory to store kubeconfig
-// files of clusters that are loaded in Headlamp.
-func defaultKubeConfigPersistenceDir() (string, error) {
-	userConfigDir, err := os.UserConfigDir()
-	if err == nil {
-		kubeConfigDir := filepath.Join(userConfigDir, "Headlamp", "kubeconfigs")
-		if isWindows {
-			// golang is wrong for config folder on windows.
-			// This matches env-paths and headlamp-plugin.
-			kubeConfigDir = filepath.Join(userConfigDir, "Headlamp", "Config", "kubeconfigs")
-		}
-
-		// Create the directory if it doesn't exist.
-		fileMode := 0o755
-
-		err = os.MkdirAll(kubeConfigDir, fs.FileMode(fileMode))
-		if err == nil {
-			return kubeConfigDir, nil
-		}
-	}
-
-	// if any error occurred, fallback to the current directory.
-	ex, err := os.Executable()
-	if err == nil {
-		return filepath.Dir(ex), nil
-	}
-
-	return "", fmt.Errorf("failed to get default kubeconfig persistence directory: %v", err)
-}
-
-func defaultKubeConfigPersistenceFile() (string, error) {
-	kubeConfigDir, err := defaultKubeConfigPersistenceDir()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(kubeConfigDir, "config"), nil
+func defaultHeadlampKubeConfigFile() (string, error) {
+	return cfg.DefaultHeadlampKubeConfigFile()
 }
 
 // addPluginRoutes adds plugin routes to a router.
@@ -517,7 +482,7 @@ func createHeadlampHandler(config *HeadlampConfig) http.Handler {
 	}
 
 	// load dynamic clusters
-	kubeConfigPersistenceFile, err := defaultKubeConfigPersistenceFile()
+	kubeConfigPersistenceFile, err := defaultHeadlampKubeConfigFile()
 	if err != nil {
 		logger.Log(logger.LevelError, nil, err, "getting default kubeconfig persistence file")
 	}
@@ -1900,7 +1865,7 @@ func (c *HeadlampConfig) writeKubeConfig(kubeConfigBase64 string) error {
 		return fmt.Errorf("loading kubeconfig: %w", err)
 	}
 
-	kubeConfigPersistenceDir, err := defaultKubeConfigPersistenceDir()
+	kubeConfigPersistenceDir, err := cfg.MakeHeadlampKubeConfigsDir()
 	if err != nil {
 		return fmt.Errorf("getting default kubeconfig persistence dir: %w", err)
 	}
@@ -1956,7 +1921,7 @@ func (c *HeadlampConfig) deleteCluster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	kubeConfigPersistenceFile, err := defaultKubeConfigPersistenceFile()
+	kubeConfigPersistenceFile, err := defaultHeadlampKubeConfigFile()
 	if err != nil {
 		c.handleError(w, ctx, span, err, "failed to get kubeconfig persistence file", http.StatusInternalServerError)
 
@@ -1988,7 +1953,7 @@ func (c *HeadlampConfig) getKubeConfigPath(source string) (string, error) {
 		return c.kubeConfigPath, nil
 	}
 
-	return defaultKubeConfigPersistenceFile()
+	return defaultHeadlampKubeConfigFile()
 }
 
 // Handler for renaming a stateless cluster.
