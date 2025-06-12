@@ -1908,30 +1908,54 @@ func (c *HeadlampConfig) deleteCluster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	kubeConfigPersistenceFile, err := defaultHeadlampKubeConfigFile()
-	if err != nil {
-		c.handleError(w, ctx, span, err, "failed to get kubeconfig persistence file", http.StatusInternalServerError)
+	c.handleDeleteCluster(w, r, ctx, span, name)
 
-		return
-	}
+	c.getConfig(w, r)
+}
 
-	logger.Log(logger.LevelInfo, map[string]string{
-		"cluster":                   name,
-		"kubeConfigPersistenceFile": kubeConfigPersistenceFile,
-	},
-		nil, "Removing cluster from kubeconfig")
-
-	err = kubeconfig.RemoveContextFromFile(name, kubeConfigPersistenceFile)
-	if err != nil {
-		c.handleError(w, ctx, span, err, "failed to remove cluster from kubeconfig", http.StatusInternalServerError)
-
+// handleDeleteCluster handles the deletion of a cluster.
+func (c *HeadlampConfig) handleDeleteCluster(
+	w http.ResponseWriter,
+	r *http.Request,
+	ctx context.Context,
+	span trace.Span,
+	name string,
+) {
+	removeKubeConfig := r.URL.Query().Get("removeKubeConfig") == "true"
+	if removeKubeConfig {
+		c.handleRemoveKubeConfig(w, r, ctx, span, name)
 		return
 	}
 
 	logger.Log(logger.LevelInfo, map[string]string{"cluster": name, "proxy": name},
 		nil, "removed cluster successfully")
+}
 
-	c.getConfig(w, r)
+// handleRemoveKubeConfig removes the cluster from the kubeconfig file.
+func (c *HeadlampConfig) handleRemoveKubeConfig(
+	w http.ResponseWriter,
+	r *http.Request,
+	ctx context.Context,
+	span trace.Span,
+	name string,
+) {
+	configPath := r.URL.Query().Get("configPath")
+	originalName := r.URL.Query().Get("originalName")
+	source := r.URL.Query().Get("source")
+
+	const kubeConfigSource = "kubeconfig"
+
+	var configName string
+
+	if originalName != "" && source == kubeConfigSource {
+		configName = originalName
+	} else {
+		configName = name
+	}
+
+	if err := kubeconfig.RemoveContextFromFile(configName, configPath); err != nil {
+		c.handleError(w, ctx, span, err, "failed to remove cluster from kubeconfig", http.StatusInternalServerError)
+	}
 }
 
 // Get path of kubeconfig we load headlamp with from source.
