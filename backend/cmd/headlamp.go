@@ -106,6 +106,8 @@ const ContextUpdateCacheTTL = 20 * time.Second // seconds
 
 const JWTExpirationTTL = 10 * time.Second // seconds
 
+const kubeConfigSource = "kubeconfig" // source for kubeconfig contexts
+
 const (
 	// TokenCacheFileMode is the file mode for token cache files.
 	TokenCacheFileMode = 0o600 // octal
@@ -1943,8 +1945,6 @@ func (c *HeadlampConfig) handleRemoveKubeConfig(
 	originalName := r.URL.Query().Get("originalName")
 	source := r.URL.Query().Get("source")
 
-	const kubeConfigSource = "kubeconfig"
-
 	var configName string
 
 	if originalName != "" && source == kubeConfigSource {
@@ -1960,7 +1960,7 @@ func (c *HeadlampConfig) handleRemoveKubeConfig(
 
 // Get path of kubeconfig we load headlamp with from source.
 func (c *HeadlampConfig) getKubeConfigPath(source string) (string, error) {
-	if source == "kubeconfig" {
+	if source == kubeConfigSource {
 		return c.kubeConfigPath, nil
 	}
 
