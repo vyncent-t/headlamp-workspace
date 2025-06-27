@@ -141,12 +141,19 @@ export default function Settings() {
             ),
           },
           {
-            name: t('translation|Use evict for pod deletion'),
+            name: (
+              <Typography id="use-evict-label">
+                {t('translation|Use evict for pod deletion')}
+              </Typography>
+            ),
             value: (
               <Switch
                 color="primary"
                 checked={useEvict}
                 onChange={e => setUseEvict(e.target.checked)}
+                inputProps={{
+                  'aria-labelledby': 'use-evict-label',
+                }}
               />
             ),
           },
