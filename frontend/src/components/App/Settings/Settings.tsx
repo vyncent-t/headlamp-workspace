@@ -105,7 +105,11 @@ export default function Settings() {
             value: <DrawerModeSettings />,
           },
           {
-            name: t('translation|Number of rows for tables'),
+            name: (
+              <Typography id="rows-per-page-label">
+                {t('translation|Number of rows for tables')}
+              </Typography>
+            ),
             value: (
               <NumRowsInput
                 defaultValue={storedRowsPerPageOptions || defaultTableRowsPerPageOptions}
