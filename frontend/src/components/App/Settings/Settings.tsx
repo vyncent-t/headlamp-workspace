@@ -97,7 +97,7 @@ export default function Settings() {
       <NameValueTable
         rows={[
           {
-            name: t('translation|Language'),
+            name: <Typography>{t('translation|Language')}</Typography>,
             value: <LocaleSelect showFullNames formControlProps={{ className: '' }} />,
           },
           {
