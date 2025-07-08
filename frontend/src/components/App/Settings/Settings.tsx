@@ -101,7 +101,11 @@ export default function Settings() {
             value: <LocaleSelect showFullNames formControlProps={{ className: '' }} />,
           },
           {
-            name: t('translation|Resource details view'),
+            name: (
+              <Typography id="drawer-mode-label">
+                {t('translation|Resource details view')}
+              </Typography>
+            ),
             value: <DrawerModeSettings />,
           },
           {
