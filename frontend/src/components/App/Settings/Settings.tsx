@@ -79,6 +79,7 @@ export default function Settings() {
 
   const sidebarLabel = 'sort-sidebar-label';
   const evictLabel = 'use-evict-label';
+  const tableRowsLabel = 'rows-per-page-label';
 
   return (
     <SectionBox
@@ -112,8 +113,10 @@ export default function Settings() {
             value: (
               <NumRowsInput
                 defaultValue={storedRowsPerPageOptions || defaultTableRowsPerPageOptions}
+                nameLabelID={tableRowsLabel}
               />
             ),
+            nameID: tableRowsLabel,
           },
           {
             name: t('translation|Timezone to display for dates'),
