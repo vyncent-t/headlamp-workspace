@@ -80,6 +80,7 @@ export default function Settings() {
   const sidebarLabel = 'sort-sidebar-label';
   const evictLabel = 'use-evict-label';
   const tableRowsLabel = 'rows-per-page-label';
+  const timezoneLabel = 'timezone-label';
 
   return (
     <SectionBox
@@ -125,9 +126,11 @@ export default function Settings() {
                 <TimezoneSelect
                   initialTimezone={selectedTimezone}
                   onChange={name => setSelectedTimezone(name)}
+                  tableID={timezoneLabel}
                 />
               </Box>
             ),
+            nameID: timezoneLabel,
           },
           {
             name: t('translation|Sort sidebar items alphabetically'),
