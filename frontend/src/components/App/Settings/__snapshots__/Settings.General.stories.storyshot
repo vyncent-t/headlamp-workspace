@@ -279,6 +279,7 @@
           >
             <p
               class="MuiTypography-root MuiTypography-body1 css-1ezega9-MuiTypography-root"
+              id="timezone-label"
             >
               Timezone to display for dates
             </p>
@@ -303,6 +304,7 @@
                       aria-describedby="cluster-selector-autocomplete-helper-text"
                       aria-expanded="false"
                       aria-invalid="false"
+                      aria-labelledby="timezone-label"
                       autocapitalize="none"
                       autocomplete="off"
                       class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputSizeSmall MuiInputBase-inputAdornedEnd MuiAutocomplete-input MuiAutocomplete-inputFocused css-19qh8xo-MuiInputBase-input-MuiOutlinedInput-input"
