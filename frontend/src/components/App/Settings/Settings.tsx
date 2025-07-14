@@ -78,6 +78,7 @@ export default function Settings() {
   }, [useEvict]);
 
   const sidebarLabel = 'sort-sidebar-label';
+  const evictLabel = 'use-evict-label';
 
   return (
     <SectionBox
@@ -146,8 +147,12 @@ export default function Settings() {
                 color="primary"
                 checked={useEvict}
                 onChange={e => setUseEvict(e.target.checked)}
+                inputProps={{
+                  'aria-labelledby': evictLabel,
+                }}
               />
             ),
+            nameID: evictLabel,
           },
         ]}
       />
