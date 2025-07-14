@@ -77,6 +77,8 @@ export default function Settings() {
     );
   }, [useEvict]);
 
+  const sidebarLabel = 'sort-sidebar-label';
+
   return (
     <SectionBox
       title={t('translation|General Settings')}
@@ -130,8 +132,12 @@ export default function Settings() {
                 color="primary"
                 checked={sortSidebar}
                 onChange={e => setSortSidebar(e.target.checked)}
+                inputProps={{
+                  'aria-labelledby': sidebarLabel,
+                }}
               />
             ),
+            nameID: sidebarLabel,
           },
           {
             name: t('translation|Use evict for pod deletion'),
