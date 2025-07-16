@@ -81,6 +81,7 @@ export default function Settings() {
   const evictLabel = 'use-evict-label';
   const tableRowsLabel = 'rows-per-page-label';
   const timezoneLabel = 'timezone-label';
+  const overviewLabel = 'overview-label';
 
   return (
     <SectionBox
@@ -108,6 +109,7 @@ export default function Settings() {
           {
             name: t('translation|Resource details view'),
             value: <DrawerModeSettings />,
+            nameID: overviewLabel,
           },
           {
             name: t('translation|Number of rows for tables'),

@@ -140,6 +140,7 @@
           >
             <p
               class="MuiTypography-root MuiTypography-body1 css-1ezega9-MuiTypography-root"
+              id="overview-label"
             >
               Resource details view
             </p>
