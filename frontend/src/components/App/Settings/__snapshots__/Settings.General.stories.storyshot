@@ -151,6 +151,7 @@
               class="MuiBox-root css-k008qs"
             >
               <button
+                aria-label="resource-details-view-option-window"
                 aria-pressed="true"
                 class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary MuiButton-disableElevation MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary MuiButton-disableElevation css-17o2rvr-MuiButtonBase-root-MuiButton-root"
                 tabindex="0"
@@ -179,6 +180,7 @@
                 />
               </button>
               <button
+                aria-label="resource-details-view-option-full-page"
                 aria-pressed="false"
                 class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary MuiButton-disableElevation MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorPrimary MuiButton-disableElevation css-gl7zuq-MuiButtonBase-root-MuiButton-root"
                 tabindex="0"
