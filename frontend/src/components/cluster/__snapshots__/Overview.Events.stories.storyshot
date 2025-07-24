@@ -57,7 +57,7 @@
                             class="MuiBox-root css-0"
                           >
                             <p
-                              class="MuiTypography-root MuiTypography-body1 MuiTypography-gutterBottom css-16da70x-MuiTypography-root"
+                              class="MuiTypography-root MuiTypography-body1 MuiTypography-gutterBottom css-13jp68y-MuiTypography-root"
                             >
                               CPU Usage
                             </p>
@@ -176,7 +176,7 @@
                             class="MuiBox-root css-0"
                           >
                             <p
-                              class="MuiTypography-root MuiTypography-body1 MuiTypography-gutterBottom css-16da70x-MuiTypography-root"
+                              class="MuiTypography-root MuiTypography-body1 MuiTypography-gutterBottom css-13jp68y-MuiTypography-root"
                             >
                               Memory Usage
                             </p>
@@ -295,7 +295,7 @@
                             class="MuiBox-root css-0"
                           >
                             <p
-                              class="MuiTypography-root MuiTypography-body1 MuiTypography-gutterBottom css-16da70x-MuiTypography-root"
+                              class="MuiTypography-root MuiTypography-body1 MuiTypography-gutterBottom css-13jp68y-MuiTypography-root"
                             >
                               Pods
                             </p>
@@ -420,7 +420,7 @@
                             class="MuiBox-root css-0"
                           >
                             <p
-                              class="MuiTypography-root MuiTypography-body1 MuiTypography-gutterBottom css-16da70x-MuiTypography-root"
+                              class="MuiTypography-root MuiTypography-body1 MuiTypography-gutterBottom css-13jp68y-MuiTypography-root"
                             >
                               Nodes
                             </p>
