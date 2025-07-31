@@ -26,9 +26,11 @@ import {
 } from '@mui/material';
 // import Fuse from 'fuse.js';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import getDocDefinitions from '../../../lib/docs';
 import { useCluster } from '../../../lib/k8s';
+import { getAllDocs } from '../../../redux/docsSlice';
 import getAllDocDefinitions, { getContextKeyword } from './Util';
 
 interface DefinitionToolTipProps {
@@ -65,6 +67,17 @@ export function DefinitionToolTip({
   const keywordDef = docsData?.description;
 
   const formattedKeyword = formatKeyword(keyword);
+
+  const allDocs = useSelector((state: any) => state.docs.allDocs);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!allDocs) {
+      dispatch(getAllDocs());
+    }
+
+    console.log('SLICE DOCS', allDocs);
+  }, []);
 
   // ---------- NOTE TO ME
   // how this works:
