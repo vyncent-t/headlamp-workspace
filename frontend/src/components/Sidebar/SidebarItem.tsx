@@ -21,7 +21,8 @@ import React, { memo } from 'react';
 import { generatePath } from 'react-router';
 import { formatClusterPathParam, getClusterPrefixedPath } from '../../lib/cluster';
 import { useSelectedClusters } from '../../lib/k8s';
-import { createRouteURL, getRoute } from '../../lib/router';
+import { createRouteURL } from '../../lib/router/createRouteURL';
+import { getRoute } from '../../lib/router/getRoute';
 import ListItemLink from './ListItemLink';
 import { SidebarEntry } from './sidebarSlice';
 

@@ -40,7 +40,7 @@ import { setSidebarItem, setSidebarItemFilter } from '../components/Sidebar/side
 import { getHeadlampAPIHeaders } from '../helpers/getHeadlampAPIHeaders';
 import { AppTheme } from '../lib/AppTheme';
 import { KubeObject } from '../lib/k8s/KubeObject';
-import { Route } from '../lib/router';
+import type { Route } from '../lib/router/Route';
 import {
   addDetailsViewHeaderActionsProcessor,
   AppBarAction,
@@ -1118,3 +1118,5 @@ export {
   PluginManager,
   ConfigStore,
 };
+
+export type { CallbackActionOptions };
