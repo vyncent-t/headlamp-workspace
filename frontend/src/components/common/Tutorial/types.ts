@@ -28,7 +28,8 @@ export type TutorialContextId =
   | 'AddClusterButton'
   | 'LoadFromKubeConfig'
   | 'LoadDemoKubeConfig'
-  | 'CreateButton';
+  | 'CreateButton'
+  | 'CreateDemoResource';
 
 // helper to keep record types strict (so we don't miss keys)
 export type StrictRecord<K extends string, V> = { [P in K]: V };

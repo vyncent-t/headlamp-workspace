@@ -29,4 +29,5 @@ export const contextToTopic: StrictRecord<TutorialContextId, TutorialTopicId> = 
 
   // resources → add resource
   CreateButton: 'resources.addResource',
+  CreateDemoResource: 'resources.addResource',
 };

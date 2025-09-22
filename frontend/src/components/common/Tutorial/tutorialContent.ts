@@ -29,6 +29,8 @@ export const tutorialContent: StrictRecord<TutorialContextId, string> = {
     'Click here to load a demo KubeConfig file. This is useful for testing and learning purposes.',
   CreateButton:
     'This is the Create button. Click here to create a new resource in your selected cluster.',
+  CreateDemoResource:
+    'Click here to create a demo resource in your selected cluster. This is useful for testing and learning purposes.',
 };
 
 export function getTutorialText(context: TutorialContextId): string {
