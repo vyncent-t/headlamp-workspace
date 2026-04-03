@@ -32,6 +32,7 @@ const checkExports = [
   'A8RInfo',
   'CircularChart',
   'CreateButton',
+  'CreateResourceForm',
   'CopyButton',
   'DeleteButton',
   'DeleteMultipleButton',

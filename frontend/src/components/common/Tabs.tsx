@@ -160,23 +160,32 @@ interface TabPanelProps extends TypographyProps {
 
 /**
  * Renders a panel for the currently active tab.
+ * Lazily mounts content on first visit, then keeps it mounted.
  *
  * @param props - The properties of the tab panel.
  * @returns A container showing the content if this panel is active.
  */
 export function TabPanel(props: TabPanelProps) {
   const { children, tabIndex, index, id, labeledBy } = props;
+  const isActive = tabIndex === index;
+  const [hasBeenActive, setHasBeenActive] = React.useState(isActive);
+
+  React.useEffect(() => {
+    if (isActive) {
+      setHasBeenActive(prev => prev || isActive);
+    }
+  }, [isActive]);
 
   return (
     <Typography
       component="div"
       role="tabpanel"
-      hidden={tabIndex !== index}
+      hidden={!isActive}
       id={id}
       aria-labelledby={labeledBy}
       sx={{ flexGrow: 1, overflow: 'hidden' }}
     >
-      {children}
+      {hasBeenActive ? children : null}
     </Typography>
   );
 }

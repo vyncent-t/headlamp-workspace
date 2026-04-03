@@ -67,10 +67,6 @@
       hidden=""
       id="full-width-tabpanel-1-BasicTabs-tabs-id"
       role="tabpanel"
-    >
-      <p>
-        tab body 2
-      </p>
-    </div>
+    />
   </div>
 </body>

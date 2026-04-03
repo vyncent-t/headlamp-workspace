@@ -262,21 +262,7 @@
             hidden=""
             id="full-width-tabpanel-1-Editor-tabs-id"
             role="tabpanel"
-          >
-            <div
-              class="MuiBox-root css-u718rw"
-            >
-              <div
-                class="MuiBox-root css-19midj6"
-              >
-                <p
-                  class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-18lkse1-MuiTypography-root"
-                >
-                  No documentation available.
-                </p>
-              </div>
-            </div>
-          </div>
+          />
           <div
             aria-labelledby="full-width-tab-2-Editor-tabs-id"
             class="MuiTypography-root MuiTypography-body1 css-fth53a-MuiTypography-root"
