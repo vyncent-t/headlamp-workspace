@@ -38,6 +38,11 @@ export class CreateResourceFormPage {
     await page.getByRole('button', { name: 'Create', exact: true }).click();
     await page.waitForLoadState('load');
 
+    // The editor opens on the "Editor" (YAML) tab by default; switch to the
+    // "Form" tab so the data-driven form (and resource-type picker) become
+    // the visible tab panel.
+    await page.getByRole('tab', { name: 'Form', exact: true }).click();
+
     // The resource-type picker is rendered immediately; the data-driven
     // form is only rendered once a resource type is selected.
     await expect(page.getByLabel('Resource Type', { exact: true })).toBeVisible();
@@ -63,8 +68,12 @@ export class CreateResourceFormPage {
 
     const form = page.getByLabel('Resource form');
 
-    // Pod name (first text field labelled "Name" inside the form).
-    await form.getByLabel('Name', { exact: true }).first().fill(name);
+    // Pod name lives in the Metadata fieldset. The label is rendered as
+    // "Name *" because the field is required, so use a regex rather than
+    // an exact string. Scope to the Metadata group so it can't accidentally
+    // match a container row's Name input.
+    const metadata = form.getByRole('group', { name: 'Metadata' });
+    await metadata.getByLabel(/^Name\s*\*?$/).fill(name);
 
     // Default container row is added automatically when Pod is selected
     // (Pod.getBaseObject seeds spec.containers). Fill its name + image.
