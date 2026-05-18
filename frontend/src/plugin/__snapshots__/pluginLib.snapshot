@@ -119,7 +119,12 @@
         "class": [Function],
         "form": [Function],
       },
+      "ReplicaSet": {
+        "class": [Function],
+        "form": [Function],
+      },
     },
+    "ReplicaSetForm": [Function],
     "Resource": {
       "A8RInfo": [Function],
       "AuthVisible": [Function],
@@ -178,7 +183,12 @@
           "class": [Function],
           "form": [Function],
         },
+        "ReplicaSet": {
+          "class": [Function],
+          "form": [Function],
+        },
       },
+      "ReplicaSetForm": [Function],
       "ResourceLink": [Function],
       "ResourceListView": [Function],
       "ResourceTable": {
@@ -192,6 +202,7 @@
       "RollbackDialog": [Function],
       "ScaleButton": [Function],
       "ScaleMultipleButton": [Function],
+      "SchemaResourceForm": [Function],
       "SecretField": [Function],
       "SectionGrid": [Function],
       "SimpleEditor": [Function],
@@ -242,6 +253,7 @@
     "RollbackDialog": [Function],
     "ScaleButton": [Function],
     "ScaleMultipleButton": [Function],
+    "SchemaResourceForm": [Function],
     "SearchPopover": [Function],
     "SecretField": [Function],
     "SectionBox": [Function],
