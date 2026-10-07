@@ -658,10 +658,9 @@ export function ServicePortsTextField(props: ServicePortsTextFieldProps) {
   }
 
   function addPort() {
+    // nodePort is left out so Kubernetes picks a free one. A fixed default would clash with
+    // any other Service already using it, including another port on this one.
     const nextPort: ServicePortDraft = { name: '', port: 80, protocol: 'TCP', targetPort: 80 };
-    if (showNodePort) {
-      nextPort.nodePort = 30000;
-    }
     onChange([...ports, nextPort]);
   }
 
