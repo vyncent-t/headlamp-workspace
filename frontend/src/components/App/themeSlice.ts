@@ -18,9 +18,11 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { useSelector } from 'react-redux';
 import { AppTheme } from '../../lib/AppTheme';
 import {
+  clearSystemTheme,
   getThemeName,
   getUserSelectedThemeName,
   setAutomaticTheme,
+  setSystemTheme,
   setTheme as setAppTheme,
 } from '../../lib/themes';
 import { AppLogoType } from './AppLogo';
@@ -60,7 +62,18 @@ function updateThemeName(state: ThemeState, backendConfig: BackendThemeConfig) {
     !backendConfig.forceTheme && !getUserSelectedThemeName(state.appThemes)
       ? state.pluginDefault
       : undefined;
-  const newThemeName = pluginDefault || getThemeName(backendConfig, state.appThemes);
+  const registeredDefault = (name?: string) =>
+    state.appThemes.some(theme => theme.name === name) ? name : undefined;
+  const newThemeName =
+    pluginDefault ||
+    getThemeName(
+      {
+        ...backendConfig,
+        defaultLightTheme: registeredDefault(backendConfig.defaultLightTheme),
+        defaultDarkTheme: registeredDefault(backendConfig.defaultDarkTheme),
+      },
+      state.appThemes
+    );
 
   if (pluginDefault) {
     setAutomaticTheme(pluginDefault);
@@ -88,6 +101,15 @@ const themeSlice = createSlice({
     setTheme(state, action: PayloadAction<string>) {
       state.name = action.payload;
       setAppTheme(state.name);
+    },
+    /**
+     * Sets a theme chosen by the system (such as following the OS appearance) rather than by
+     * the user. It isn't recorded as an explicit choice, so later quick swap choices still
+     * apply, but it is kept across config refreshes once following is turned off.
+     */
+    applySystemTheme(state, action: PayloadAction<string>) {
+      state.name = action.payload;
+      setSystemTheme(action.payload);
     },
     addCustomAppTheme(state, action: PayloadAction<AppTheme>) {
       state.appThemes = state.appThemes.filter(it => it.name !== action.payload.name);
@@ -133,9 +155,11 @@ const themeSlice = createSlice({
     /**
      * Re-evaluates the active theme after the user's saved theme choices change (for example
      * the quick swap light/dark themes), using the backend configuration already applied.
-     * Does nothing until the backend configuration has been applied.
+     * A theme kept from following the system appearance gives way to the changed choices.
+     * Only re-evaluates once the backend configuration has been applied.
      */
     reapplyThemePreferences(state, action: PayloadAction<Omit<BackendThemeConfig, 'forceTheme'>>) {
+      clearSystemTheme();
       if (!state.backendConfigReady) {
         return;
       }
@@ -183,6 +207,7 @@ export const useCurrentAppTheme = () => {
 export const {
   setBrandingAppLogoComponent,
   setTheme,
+  applySystemTheme,
   applyBackendThemeConfig,
   reapplyThemePreferences,
   ensureValidThemeName,
